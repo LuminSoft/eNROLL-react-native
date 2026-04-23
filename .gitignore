@@ -65,5 +65,8 @@ example-app/ios/*.xcodeproj/xcuserdata/
 # Package lock (keep root, ignore example)
 example-app/package-lock.json
 
+# Internal docs (local only, not pushed to GitHub)
+.internal/
+
 # Derived data
 .derived-data/
