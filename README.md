@@ -237,10 +237,6 @@ npx react-native run-ios
 - [Android Integration](docs/integration-android.md)
 - [iOS Integration](docs/integration-ios.md)
 
-## Publishing to npm
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step npm publishing instructions.
-
 ## License
 
 MIT
