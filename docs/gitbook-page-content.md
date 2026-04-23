@@ -182,3 +182,8 @@ await startEnroll({
 ## API Reference
 
 See the [full API documentation](docs/api.md) for all types, options, and configuration details.
+
+## Additional Resources
+
+* **npm package:** [enroll-react-native](https://www.npmjs.com/package/enroll-react-native)
+* **GitHub:** [https://github.com/LuminSoft/eNROLL-react-native](https://github.com/LuminSoft/eNROLL-react-native)

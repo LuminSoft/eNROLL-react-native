@@ -80,6 +80,33 @@ git push origin main --tags
 
 Then create a release on GitHub matching the tag with the changelog entry.
 
+## Automated Publish (CI/CD)
+
+Publishing is automated via GitHub Actions. When you create a **GitHub Release**:
+
+1. Go to https://github.com/LuminSoft/eNROLL-react-native/releases
+2. Click **"Draft a new release"**
+3. Create a tag matching your version (e.g. `v1.0.1`)
+4. Add release notes from CHANGELOG.md
+5. Click **"Publish release"**
+
+The `.github/workflows/publish.yml` workflow will automatically:
+- Checkout code
+- Install dependencies
+- Build with `react-native-builder-bob`
+- Publish to npm
+
+**Required secret:** Add `NPM_TOKEN` to your repo secrets:
+1. Go to https://github.com/LuminSoft/eNROLL-react-native/settings/secrets/actions
+2. Click **"New repository secret"**
+3. Name: `NPM_TOKEN`
+4. Value: Generate at https://www.npmjs.com/settings/luminsoftcorp/tokens (Automation token)
+
+### CI Pipeline
+On every push/PR to `main`, GitHub Actions runs:
+- **TypeScript Build** — `npm run prepare` + `npm run typescript`
+- **Android Build** — Gradle compilation of the plugin module
+
 ## How Clients Install
 
 Once published, clients install with:
