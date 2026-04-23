@@ -1,0 +1,39 @@
+# Example app (not part of the published package)
+example-app/
+scripts/
+docs/
+.github/
+
+# Development files
+.derived-data/
+*.tsbuildinfo
+tsconfig.json
+tsconfig.build.json
+.eslintrc*
+.prettierrc*
+
+# Build artifacts
+android/build/
+ios/build/
+ios/Pods/
+
+# License files
+*.lic
+
+# macOS
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+*.iml
+
+# Architecture and internal docs
+ARCHITECTURE.md
+DEPLOYMENT.md
+CONTRIBUTING.md
+PROJECT_RULES.md
+TASKS.md

@@ -1,0 +1,69 @@
+# OSX
+.DS_Store
+
+# node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+**/.xcode.env.local
+
+# Android/IntelliJ
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+
+# Bundle artifacts
+*.jsbundle
+
+# CocoaPods
+ios/Pods/
+
+# Build output
+lib/
+dist/
+
+# Turborepo
+.turbo/
+
+# Generated
+*.tsbuildinfo
+
+# License files (private per applicationId)
+*.lic
+
+# Example app build artifacts
+example-app/node_modules/
+example-app/android/app/build/
+example-app/android/.gradle/
+example-app/ios/build/
+example-app/ios/Pods/
+example-app/ios/Podfile.lock
+example-app/ios/*.xcworkspace/xcuserdata/
+example-app/ios/*.xcodeproj/xcuserdata/
+
+# Package lock (keep root, ignore example)
+example-app/package-lock.json
+
+# Derived data
+.derived-data/

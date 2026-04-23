@@ -1,0 +1,87 @@
+{
+  "name": "enroll-react-native",
+  "version": "1.0.0",
+  "description": "eNROLL SDK plugin for React Native — eKYC identity verification for Android and iOS",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "enroll-react-native.podspec",
+    "react-native.config.js",
+    "!android/build",
+    "!ios/build",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "typescript": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "clean": "del-cli lib",
+    "prepare": "bob build",
+    "prepublishOnly": "bob build",
+    "release": "release-it"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "ekyc",
+    "enroll",
+    "identity-verification",
+    "biometrics",
+    "luminsoft"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuminSoft/eNROLL-react-native.git"
+  },
+  "author": "LuminSoft <info@luminsoft.net> (https://luminsoft.net)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LuminSoft/eNROLL-react-native/issues"
+  },
+  "homepage": "https://github.com/LuminSoft/eNROLL-react-native#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "del-cli": "^6.0.0",
+    "eslint": "^8.57.0",
+    "react": "^18.2.0",
+    "react-native": "^0.74.0",
+    "react-native-builder-bob": "^0.30.0",
+    "typescript": "^5.2.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "RNEnrollSpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}
