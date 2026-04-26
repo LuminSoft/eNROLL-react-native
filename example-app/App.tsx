@@ -24,8 +24,8 @@ import {
 
 // ─── Default values (same as Capacitor example) ─────────
 const DEFAULTS = {
-  tenantId: 'YourTenantId',
-  tenantSecret: 'YourTenantSecret',
+  tenantId: '9235e61e-3322-4940-a78e-4c182cf7ef63',
+  tenantSecret: '736db9db-680a-4608-b545-1c7d636c7487',
   enrollMode: 'onboarding' as const,
   enrollEnvironment: 'staging' as const,
   localizationCode: 'en' as const,

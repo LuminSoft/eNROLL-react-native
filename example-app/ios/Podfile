@@ -3,6 +3,8 @@ source 'https://github.com/LuminSoft/eNROLL-iOS-specs.git'
 source 'https://github.com/innovatrics/innovatrics-podspecs.git'
 source 'https://cdn.cocoapods.org/'
 
+install! 'cocoapods', :warn_for_unused_master_specs_repo => false
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -21,16 +23,19 @@ end
 
 target 'EnrollExample' do
   config = use_native_modules!
+    use_frameworks!
+    use_modular_headers!
 
-  pod 'FirebaseCore', :modular_headers => true
-  pod 'FirebaseCoreInternal', :modular_headers => true
-  pod 'FirebaseInstallations', :modular_headers => true
-  pod 'FirebaseABTesting', :modular_headers => true
-  pod 'FirebaseRemoteConfig', :modular_headers => true
-  pod 'FirebaseRemoteConfigInterop', :modular_headers => true
-  pod 'FirebaseSharedSwift', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
-  pod 'PromisesObjC', :modular_headers => true
+
+#   pod 'FirebaseCore', :modular_headers => true
+#   pod 'FirebaseCoreInternal', :modular_headers => true
+#   pod 'FirebaseInstallations', :modular_headers => true
+#   pod 'FirebaseABTesting', :modular_headers => true
+#   pod 'FirebaseRemoteConfig', :modular_headers => true
+#   pod 'FirebaseRemoteConfigInterop', :modular_headers => true
+#   pod 'FirebaseSharedSwift', :modular_headers => true
+#   pod 'GoogleUtilities', :modular_headers => true
+#   pod 'PromisesObjC', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],

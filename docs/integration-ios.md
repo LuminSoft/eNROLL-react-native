@@ -24,32 +24,15 @@ source 'https://github.com/innovatrics/innovatrics-podspecs.git'
 source 'https://cdn.cocoapods.org/'
 ```
 
-## Step 3: Set Deployment Target
+## Step 3: Set Deployment Target and Enable Frameworks
 
 In your `ios/Podfile`:
 
 ```ruby
-platform :ios, min_ios_version_supported
-```
+platform :ios, '15.0'
 
-## Step 3b: Firebase Modular Headers
-
-The eNROLL SDK depends on Firebase. You must add selective modular headers for Firebase pods inside your target block. **Do NOT use global `use_modular_headers!`** — it conflicts with React Native.
-
-```ruby
-target 'YourApp' do
-  pod 'FirebaseCore', :modular_headers => true
-  pod 'FirebaseCoreInternal', :modular_headers => true
-  pod 'FirebaseInstallations', :modular_headers => true
-  pod 'FirebaseABTesting', :modular_headers => true
-  pod 'FirebaseRemoteConfig', :modular_headers => true
-  pod 'FirebaseRemoteConfigInterop', :modular_headers => true
-  pod 'FirebaseSharedSwift', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
-  pod 'PromisesObjC', :modular_headers => true
-
-  # ... use_react_native! etc.
-end
+use_frameworks!
+use_modular_headers!
 ```
 
 ## Step 4: Add Innovatrics License File

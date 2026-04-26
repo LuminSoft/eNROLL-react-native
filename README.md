@@ -1,30 +1,28 @@
 # eNROLL React Native Plugin
 
-Official React Native plugin for the **eNROLL SDK** — eKYC identity verification for Android and iOS.
+React Native plugin for the **eNROLL SDK** — full-featured eKYC identity verification for React Native apps on Android and iOS.
+
+eNROLL is a compliance solution that prevents identity fraud and phishing. Powered by AI, it reduces errors and speeds up identification, ensuring secure verification. This is the **standard** eNROLL SDK variant with full theme and icon customization on Android and color theming on iOS.
 
 > Supports both the **Old Architecture** (Bridge) and **New Architecture** (TurboModules).
 >
 > Full feature parity with the [Capacitor plugin](https://github.com/LuminSoft/enroll-capacitor).
 
-## Features
-
-- User onboarding with document scanning and face matching
-- User authentication with configurable level of trust
-- Profile update flow
-- Contract signing flow
-- Custom theme (colors + icons)
-- Localization (English / Arabic with RTL support)
-- Forced document type selection
-- Exit step configuration
-- Mid-flow request ID event
+Current native SDK versions:
+- **Android:** eNROLL-Android v1.5.22 (via JitPack) + Innovatrics biometrics
+- **iOS:** EnrollFramework ~> 3.0.7 (via CocoaPods)
 
 ## Requirements
 
-| Platform | Minimum Version |
-|----------|----------------|
+| Platform | Minimum |
+|----------|---------|
 | React Native | >= 0.71.0 |
-| Android | minSdkVersion 24, Kotlin 2.0+ |
-| iOS | 15.1+ (uses `min_ios_version_supported`) |
+| Android minSdk | 24 |
+| Android compileSdk | 34 |
+| iOS deployment target | 13.0 |
+| Kotlin | 2.0+ |
+| Swift | 5.0 |
+| Node.js | 18+ |
 
 ## Installation
 
@@ -34,122 +32,110 @@ npm install enroll-react-native
 yarn add enroll-react-native
 ```
 
-## Android Setup
+### Android Setup
 
-### 1. Add Repositories
+#### 1. Add Repositories
 
-In your **project-level** `android/build.gradle` (or `settings.gradle` `dependencyResolutionManagement`):
+Add the JitPack and Innovatrics repositories to your **project-level** `android/build.gradle` (or `android/settings.gradle`):
 
-```groovy
-repositories {
-    google()
-    mavenCentral()
-    maven { url = uri("https://jitpack.io") }
-    maven { url = uri("https://maven.innovatrics.com/releases") }
+```gradle
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.innovatrics.com/releases' }
+    }
 }
 ```
 
-### 2. Verify minSdkVersion & Kotlin Version
+#### 2. Add Innovatrics License File
 
-In `android/build.gradle`, ensure `minSdkVersion` is at least **24** and Kotlin is **2.0+**:
+Place the `iengine.lic` file (from your Innovatrics/LuminSoft account) at:
 
-```groovy
+```
+android/app/src/main/res/raw/iengine.lic
+```
+
+> Without this file, biometric features (face liveness, document scanning, ePassport NFC) will fail at runtime.
+
+#### 3. Verify minSdkVersion
+
+Ensure `minSdkVersion` is at least **24** in your project-level `android/build.gradle`:
+
+```gradle
 ext {
     minSdkVersion = 24
     kotlinVersion = "2.0.21"
 }
 ```
 
-Also explicitly set the Kotlin Gradle plugin in the `dependencies` block:
+### iOS Setup
 
-```groovy
-dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-}
-```
+#### 1. Configure Podfile
 
-### 3. Add Innovatrics License File
-
-Place your `iengine.lic` file in:
-
-```
-android/app/src/main/res/raw/iengine.lic
-```
-
-> The license is tied to your `applicationId`. Contact LuminSoft to obtain one.
-
-### 4. ProGuard Rules
-
-If you use R8/ProGuard, add to `android/app/proguard-rules.pro`:
-
-```proguard
--keep class com.luminsoft.enroll_sdk.** { *; }
--keep class com.innovatrics.** { *; }
-```
-
-## iOS Setup
-
-### 1. Add CocoaPods Sources
-
-At the **top** of your `ios/Podfile`, add the required pod sources:
+Add the required pod sources and enable frameworks at the **top** of your `ios/Podfile`:
 
 ```ruby
 source 'https://github.com/LuminSoft/eNROLL-iOS-specs.git'
 source 'https://github.com/innovatrics/innovatrics-podspecs.git'
 source 'https://cdn.cocoapods.org/'
+
+platform :ios, '15.0'
+
+use_frameworks!
+use_modular_headers!
 ```
 
-### 2. Set Deployment Target
+#### 2. Add Innovatrics License File
 
-In your `ios/Podfile`:
+Place the `iengine.lic` file at `ios/YourApp/iengine.lic`, then add it to your Xcode project:
 
-```ruby
-platform :ios, min_ios_version_supported
-```
+1. Open `ios/YourApp.xcworkspace` in Xcode
+2. Drag `iengine.lic` into the **App** group
+3. Ensure **"Copy items if needed"** is checked and the target is selected
 
-### 2b. Firebase Modular Headers
+> Without this file, biometric features will fail at runtime.
 
-The eNROLL SDK depends on Firebase. Add modular headers for Firebase pods to avoid Swift/static library issues:
+#### 3. Add Info.plist Permissions
 
-```ruby
-pod 'FirebaseCore', :modular_headers => true
-pod 'FirebaseCoreInternal', :modular_headers => true
-pod 'FirebaseInstallations', :modular_headers => true
-pod 'FirebaseABTesting', :modular_headers => true
-pod 'FirebaseRemoteConfig', :modular_headers => true
-pod 'FirebaseRemoteConfigInterop', :modular_headers => true
-pod 'FirebaseSharedSwift', :modular_headers => true
-pod 'GoogleUtilities', :modular_headers => true
-pod 'PromisesObjC', :modular_headers => true
-```
-
-> **Do NOT use** global `use_modular_headers!` — it conflicts with React Native's header management.
-
-### 3. Add Innovatrics License File
-
-1. Place `iengine.lic` in your Xcode project (e.g. `ios/YourApp/iengine.lic`)
-2. Add it to **Build Phases > Copy Bundle Resources**
-
-### 4. Info.plist Permissions
-
-Add required permissions to `ios/YourApp/Info.plist`:
+Add to `ios/YourApp/Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
-<string>Camera access is required for identity verification</string>
+<string>We need camera access to capture your ID and face for verification</string>
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>Location is required for identity verification</string>
-<key>NFCReaderUsageDescription</key>
-<string>NFC is used to read passport chips</string>
+<string>We need your location for security compliance</string>
 ```
 
-### 5. Install Pods
+#### 4. Install Pods
 
 ```bash
 cd ios && pod install
 ```
 
+> **Note:** iOS builds require a **physical device**. The EnrollFramework does not include a simulator architecture.
+
+### ePassport / NFC (Optional — iOS only)
+
+If you need electronic passport NFC reading, add to `Info.plist`:
+
+```xml
+<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
+<array><string>A0000002471001</string></array>
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<array><string>A0000002471001</string></array>
+<key>NFCReaderUsageDescription</key>
+<string>We need NFC access to read your electronic passport</string>
+```
+
+Then enable **Near Field Communication Tag Reading** in Xcode → Target → Signing & Capabilities.
+
+---
+
 ## Usage
+
+### Basic Example
 
 ```typescript
 import {
@@ -158,84 +144,169 @@ import {
   type StartEnrollOptions,
 } from 'enroll-react-native';
 
-// Listen for mid-flow request ID
+// Listen for request ID events (fires mid-flow)
 const subscription = addRequestIdListener((event) => {
   console.log('Request ID:', event.requestId);
 });
 
-// Start enrollment
-const options: StartEnrollOptions = {
-  tenantId: 'YOUR_TENANT_ID',
-  tenantSecret: 'YOUR_TENANT_SECRET',
-  enrollMode: 'onboarding',
-  enrollEnvironment: 'staging',
-  localizationCode: 'en',
-  skipTutorial: false,
-};
-
 try {
-  const result = await startEnroll(options);
-  console.log('Success:', result.applicantId);
-} catch (error) {
-  console.error('Failed:', error.message);
-}
+  const result = await startEnroll({
+    tenantId: 'YOUR_TENANT_ID',
+    tenantSecret: 'YOUR_TENANT_SECRET',
+    enrollMode: 'onboarding',
+    enrollEnvironment: 'staging',
+    localizationCode: 'en',
+    skipTutorial: false,
+  });
 
-// Clean up
-subscription.remove();
+  console.log('Success! Applicant ID:', result.applicantId);
+  console.log('Exit step completed:', result.exitStepCompleted);
+} catch (error) {
+  console.error('Enrollment failed:', error);
+} finally {
+  subscription.remove();
+}
 ```
 
-## API Reference
-
-See [docs/api.md](docs/api.md) for the full API reference.
-
-## Modes
-
-| Mode | Description | Required Options |
-|------|------------|-----------------|
-| `'onboarding'` | Register a new user | `tenantId`, `tenantSecret` |
-| `'auth'` | Authenticate existing user | + `applicationId`, `levelOfTrust` |
-| `'update'` | Update user profile | `tenantId`, `tenantSecret` |
-| `'signContract'` | Sign a contract | + `templateId` |
-
-## Theming
+### Authentication Mode
 
 ```typescript
-const options: StartEnrollOptions = {
-  // ...required options
+const result = await startEnroll({
+  tenantId: 'YOUR_TENANT_ID',
+  tenantSecret: 'YOUR_TENANT_SECRET',
+  enrollMode: 'auth',
+  applicationId: 'APPLICATION_ID',
+  levelOfTrust: 'LEVEL_OF_TRUST_TOKEN',
+});
+```
+
+### Sign Contract Mode
+
+```typescript
+const result = await startEnroll({
+  tenantId: 'YOUR_TENANT_ID',
+  tenantSecret: 'YOUR_TENANT_SECRET',
+  enrollMode: 'signContract',
+  templateId: '12345',
+  contractParameters: '{"key": "value"}',
+});
+```
+
+---
+
+## Enroll Modes
+
+| Mode | Description | Required Params |
+|------|-------------|-----------------|
+| `onboarding` | Register a new user | `tenantId`, `tenantSecret` |
+| `auth` | Authenticate existing user | + `applicationId`, `levelOfTrust` |
+| `update` | Re-verify / update user | + `applicationId` |
+| `signContract` | Sign contract templates | + `templateId` |
+
+## Configuration Options
+
+| Key | Type | Required | Default | Description |
+|-----|------|----------|---------|-------------|
+| `tenantId` | `string` | ✅ | — | Organization tenant ID |
+| `tenantSecret` | `string` | ✅ | — | Organization tenant secret |
+| `enrollMode` | `EnrollMode` | ✅ | — | SDK flow mode |
+| `applicationId` | `string` | mode-dep | — | Application ID (required for `auth`, `update`) |
+| `levelOfTrust` | `string` | mode-dep | — | Level-of-trust token (required for `auth`) |
+| `templateId` | `string` | mode-dep | — | Contract template ID (required for `signContract`) |
+| `enrollEnvironment` | `EnrollEnvironment` | | `'staging'` | Target environment |
+| `localizationCode` | `EnrollLocalization` | | `'en'` | UI language |
+| `googleApiKey` | `string` | | — | Google Maps API key for location step |
+| `skipTutorial` | `boolean` | | `false` | Skip the tutorial screen |
+| `correlationId` | `string` | | — | Link your user ID with eNROLL request ID |
+| `requestId` | `string` | | — | Resume a previous enrollment request |
+| `contractParameters` | `string` | | — | JSON string of contract parameters |
+| `enrollTheme` | `EnrollTheme` | | — | Unified theme (colors + icons) |
+| `appColors` | `EnrollColors` | | — | Color overrides (deprecated — use `enrollTheme.colors`) |
+| `enrollForcedDocumentType` | `EnrollForcedDocumentType` | | — | Force specific document type |
+| `enrollExitStep` | `EnrollStepType` | | — | Auto-close SDK after this step |
+
+## Success Result
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `applicantId` | `string` | Assigned applicant ID |
+| `enrollMessage` | `string?` | Human-readable success message |
+| `documentId` | `string?` | Document ID (if applicable) |
+| `requestId` | `string?` | Request ID for resuming later |
+| `exitStepCompleted` | `boolean` | `true` if flow ended early via `enrollExitStep` |
+| `completedStepName` | `string?` | Name of the completed exit step |
+
+## Theme Customization
+
+The eNROLL SDK supports full theme customization via `enrollTheme`. Colors work on **both** Android and iOS. Icons are **Android only**.
+
+### Colors
+
+```typescript
+await startEnroll({
+  // ...required params...
   enrollTheme: {
     colors: {
       primary: { r: 29, g: 86, b: 184, opacity: 1.0 },
       secondary: { r: 87, g: 145, b: 219 },
+      appBackgroundColor: { r: 255, g: 255, b: 255 },
       textColor: { r: 0, g: 65, b: 148 },
-    },
-    icons: {
-      // Android only
-      logo: { mode: 'custom', assetName: 'my_logo' },
+      errorColor: { r: 219, g: 48, b: 91 },
+      successColor: { r: 97, g: 204, b: 61 },
+      warningColor: { r: 249, g: 213, b: 72 },
     },
   },
-};
+});
 ```
 
-## Example App
+### Icons (Android only)
 
-See the [example-app](example-app/) directory for a complete working example with all configuration fields.
+Icon `assetName` values correspond to Android drawable resource names in your app's `res/drawable` folder.
 
-```bash
-cd example-app
-npm install
-
-# Android
-npx react-native run-android
-
-# iOS
-cd ios && pod install && cd ..
-npx react-native run-ios
+```typescript
+await startEnroll({
+  // ...required params...
+  enrollTheme: {
+    icons: {
+      logo: { mode: 'custom', assetName: 'my_company_logo', renderingMode: 'original' },
+      location: {
+        tutorial: { assetName: 'ic_location_tutorial' },
+        requestAccess: { assetName: 'ic_location_access' },
+      },
+      nationalId: {
+        tutorial: { assetName: 'ic_nid_tutorial', renderingMode: 'template' },
+      },
+    },
+  },
+});
 ```
 
-## Platform-Specific Guides
+Available icon groups: `logo`, `location`, `nationalId`, `passport`, `phone`, `email`, `faceMatching`, `securityQuestions`, `password`, `signature`, `common`, `update`, `forget`.
 
-- [Android Integration](docs/integration-android.md)
-- [iOS Integration](docs/integration-ios.md)
+## Enrollment Step Types
+
+Used with `enrollExitStep` to terminate the flow after a specific step:
+
+`phoneOtp` · `personalConfirmation` · `smileLiveness` · `emailOtp` · `saveMobileDevice` · `deviceLocation` · `password` · `securityQuestions` · `amlCheck` · `termsAndConditions` · `electronicSignature` · `ntraCheck` · `csoCheck`
+
+---
+
+## Platform Limitations
+
+| Feature | Android | iOS |
+|---------|---------|-----|
+| Color theming | ✅ | ✅ |
+| Icon customization | ✅ | ❌ (planned) |
+| Biometric SDK (Innovatrics) | ✅ | ✅ |
+| Simulator support | ✅ (emulator) | ❌ (device only) |
+
+## Security Notes
+
+- **Never hardcode** `tenantSecret`, `levelOfTrust`, or API keys in client-side code.
+- Use secure storage (Keychain on iOS, Keystore on Android).
+- Rooted/jailbroken devices are blocked by default.
+- All SDK network calls use HTTPS.
+- Regularly update the plugin to the latest stable version.
 
 ## License
 
