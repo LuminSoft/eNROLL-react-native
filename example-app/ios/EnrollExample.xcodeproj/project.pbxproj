@@ -48,6 +48,7 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-EnrollExample-EnrollExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EnrollExample-EnrollExampleTests.release.xcconfig"; path = "Target Support Files/Pods-EnrollExample-EnrollExampleTests/Pods-EnrollExample-EnrollExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A1B2C3D4E5F6 /* iengine.lic */ = {isa = PBXFileReference; lastKnownFileType = text; name = iengine.lic; path = EnrollExample/iengine.lic; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F1336B8C2F9EC03F00042425 /* EnrollExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = EnrollExample.entitlements; path = EnrollExample/EnrollExample.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +91,7 @@
 		13B07FAE1A68108700A75B9A /* EnrollExample */ = {
 			isa = PBXGroup;
 			children = (
+				F1336B8C2F9EC03F00042425 /* EnrollExample.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -437,7 +439,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.luminsoft.EnrollTestingApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.enrollexample.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EnrollExample.app/EnrollExample";
 			};
@@ -461,7 +463,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.luminsoft.EnrollTestingApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.enrollexample.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EnrollExample.app/EnrollExample";
 			};
@@ -473,8 +475,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = EnrollExample/EnrollExample.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UV3Z5YRCMW;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = EnrollExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -488,7 +490,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.luminsoft.EnrollTestingApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.enrollexample;
 				PRODUCT_NAME = EnrollExample;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -502,8 +504,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = EnrollExample/EnrollExample.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UV3Z5YRCMW;
 				INFOPLIST_FILE = EnrollExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -516,7 +518,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.luminsoft.EnrollTestingApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.enrollexample;
 				PRODUCT_NAME = EnrollExample;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

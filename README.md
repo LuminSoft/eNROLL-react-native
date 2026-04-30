@@ -114,22 +114,44 @@ Add to `ios/YourApp/Info.plist`:
 cd ios && pod install
 ```
 
-> **Note:** iOS builds require a **physical device**. The EnrollFramework does not include a simulator architecture.
+> **Note:** Core iOS verification flows should be tested on a **physical device**. Even when a simulator build succeeds, camera, NFC, provisioning, and license-bound behavior are only reliable on real hardware.
 
 ### ePassport / NFC (Optional — iOS only)
 
-If you need electronic passport NFC reading, add to `Info.plist`:
+If you need electronic passport NFC reading:
+
+1. Add the permission message to `Info.plist`:
 
 ```xml
-<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
-<array><string>A0000002471001</string></array>
-<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
-<array><string>A0000002471001</string></array>
 <key>NFCReaderUsageDescription</key>
 <string>We need NFC access to read your electronic passport</string>
 ```
 
-Then enable **Near Field Communication Tag Reading** in Xcode → Target → Signing & Capabilities.
+2. In Xcode, open **Target → Signing & Capabilities** and add **Near Field Communication Tag Reading**.
+
+3. Add the NFC entitlement to your app target entitlements file:
+
+```xml
+<key>com.apple.developer.nfc.readersession.formats</key>
+<array>
+  <string>TAG</string>
+</array>
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<array>
+  <string>A0000002471001</string>
+  <string>A0000002472001</string>
+</array>
+```
+
+4. Build on a **physical iPhone**. NFC does not work in the simulator.
+
+5. Make sure your Apple team / provisioning profile includes the NFC capability.
+
+If you are running this repository's example app on your own device, use a bundle identifier that belongs to your Apple team and matches your `iengine.lic`. The helper script supports:
+
+```bash
+IOS_BUNDLE_ID=com.yourcompany.EnrollExample IOS_DEVELOPMENT_TEAM=YOURTEAMID ./scripts/run-example-ios.sh
+```
 
 ---
 

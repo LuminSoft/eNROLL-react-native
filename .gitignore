@@ -57,6 +57,8 @@ example-app/node_modules/
 example-app/android/app/build/
 example-app/android/.gradle/
 example-app/ios/build/
+example-app/ios/build-device/
+example-app/ios/build-simulator/
 example-app/ios/Pods/
 example-app/ios/Podfile.lock
 example-app/ios/*.xcworkspace/xcuserdata/

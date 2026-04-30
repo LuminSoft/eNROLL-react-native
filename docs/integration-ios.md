@@ -65,15 +65,22 @@ Add the following keys to `ios/YourApp/Info.plist`:
 
 1. In Xcode, go to **Signing & Capabilities**
 2. Click **+ Capability** and add **Near Field Communication Tag Reading**
-3. In your `Info.plist`, add:
+3. In your app entitlements file, add:
 
 ```xml
+<key>com.apple.developer.nfc.readersession.formats</key>
+<array>
+    <string>TAG</string>
+</array>
 <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 <array>
     <string>A0000002471001</string>
     <string>A0000002472001</string>
 </array>
 ```
+
+4. Build and test on a **physical iPhone**. NFC is unavailable on the simulator.
+5. Ensure your provisioning profile / Apple team supports the NFC capability.
 
 ## Step 6: Install Pods
 
@@ -88,6 +95,12 @@ npx react-native run-ios
 ```
 
 Or open `ios/YourApp.xcworkspace` in Xcode and build from there.
+
+If you are testing this repository's example app on your own iPhone, avoid the vendor bundle identifier. Use one that belongs to your Apple team and matches your `iengine.lic`, for example:
+
+```bash
+IOS_BUNDLE_ID=com.yourcompany.EnrollExample IOS_DEVELOPMENT_TEAM=YOURTEAMID ./scripts/run-example-ios.sh
+```
 
 ## Troubleshooting
 
@@ -104,9 +117,9 @@ source 'https://github.com/LuminSoft/eNROLL-iOS-specs.git'
 Your `iengine.lic` is bound to a specific bundle identifier. Verify in Xcode:
 **General > Identity > Bundle Identifier** matches the license.
 
-### Simulator build fails (arm64 / i386)
+### Simulator build issues
 
-The SDK uses an XCFramework that supports real devices. Building for simulators may require:
+Real verification flows should still be validated on hardware. If you need to experiment with simulator builds, architecture exclusions may help:
 
 ```ruby
 # In Podfile, post_install:

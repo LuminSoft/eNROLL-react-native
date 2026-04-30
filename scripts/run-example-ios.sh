@@ -9,12 +9,26 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 EXAMPLE_DIR="$ROOT_DIR/example-app"
 IOS_DIR="$EXAMPLE_DIR/ios"
 SCHEME="EnrollExample"
-BUNDLE_ID="com.luminsoft.EnrollTestingApp"
 METRO_PORT="${METRO_PORT:-8081}"
 METRO_LOG_FILE="${TMPDIR:-/tmp}/enroll-example-metro.log"
 SIMULATOR_DERIVED_DATA_PATH="$IOS_DIR/build-simulator"
 DEVICE_DERIVED_DATA_PATH="$IOS_DIR/build-device"
 DEVICE_BUILD_LOG_FILE="${TMPDIR:-/tmp}/enroll-example-ios-device-build.log"
+
+sanitize_bundle_segment() {
+  printf '%s' "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//'
+}
+
+DEFAULT_BUNDLE_OWNER="$(sanitize_bundle_segment "${USER:-local}")"
+if [ -z "$DEFAULT_BUNDLE_OWNER" ]; then
+  DEFAULT_BUNDLE_OWNER="local"
+fi
+
+# Device installs must use a bundle identifier that belongs to the developer's
+# Apple team. Allow an explicit override and otherwise default to a user-local ID.
+BUNDLE_ID="${IOS_BUNDLE_ID:-com.local.${DEFAULT_BUNDLE_OWNER}.enrollexample}"
 
 wait_for_metro() {
   local attempts=30
@@ -107,6 +121,7 @@ cd "$IOS_DIR"
 pod install --repo-update
 
 echo "==> Building & launching iOS app..."
+echo "==> Using iOS bundle identifier: $BUNDLE_ID"
 start_metro
 
 DEVICE_UDID="$(find_physical_device_udid || true)"
@@ -125,6 +140,7 @@ if [ -n "$DEVICE_UDID" ]; then
     -allowProvisioningUpdates
     -allowProvisioningDeviceRegistration
     CODE_SIGN_STYLE=Automatic
+    PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID"
   )
 
   if [ -n "${IOS_DEVELOPMENT_TEAM:-}" ]; then
@@ -161,7 +177,11 @@ if [ -n "$DEVICE_UDID" ]; then
   echo "==> Physical device build failed. Falling back to simulator."
   if grep -Eq 'No Account for Team|No profiles for|requires a development team' "$DEVICE_BUILD_LOG_FILE"; then
     echo "==> Xcode signing is not configured for this app on the connected iPhone."
-    echo "==> Open Xcode, sign in under Settings > Accounts, or rerun with IOS_DEVELOPMENT_TEAM=<your_team_id>."
+    echo "==> Open Xcode, sign in under Settings > Accounts, or rerun with IOS_DEVELOPMENT_TEAM=<your_team_id> IOS_BUNDLE_ID=<your.bundle.id>."
+  fi
+  if grep -Eq 'doesn'\''t include the Near Field Communication Tag Reading capability|Provisioning profile .* doesn'\''t support the Near Field Communication Tag Reading capability' "$DEVICE_BUILD_LOG_FILE"; then
+    echo "==> The selected Apple team/profile does not currently allow the NFC capability required by this example."
+    echo "==> Enable Near Field Communication Tag Reading for this App ID in Apple Developer, then rebuild."
   fi
   echo "==> Device build log: $DEVICE_BUILD_LOG_FILE"
 fi
@@ -182,6 +202,7 @@ xcodebuild \
   -sdk iphonesimulator \
   -destination "id=$SIMULATOR_UDID" \
   -derivedDataPath "$SIMULATOR_DERIVED_DATA_PATH" \
+  PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
   build
 
 SIMULATOR_APP_PATH="$SIMULATOR_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/$SCHEME.app"
