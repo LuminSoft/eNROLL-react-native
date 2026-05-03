@@ -9,7 +9,7 @@ eNROLL is a compliance solution that prevents identity fraud and phishing. Power
 > Full feature parity with the [Capacitor plugin](https://github.com/LuminSoft/enroll-capacitor).
 
 Current native SDK versions:
-- **Android:** eNROLL-Android v1.5.22 (via JitPack) + Innovatrics biometrics
+- **Android:** eNROLL-Android v1.5.24 (via JitPack) + Innovatrics biometrics
 - **iOS:** EnrollFramework ~> 3.0.7 (via CocoaPods)
 
 ## Requirements

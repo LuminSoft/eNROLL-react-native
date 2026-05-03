@@ -111,7 +111,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-android:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation('com.github.LuminSoft:eNROLL-Android:v1.5.22') {
+    implementation('com.github.LuminSoft:eNROLL-Android:v1.5.24') {
         exclude group: 'org.bouncycastle', module: 'bcprov-jdk18on'
         exclude group: 'org.bouncycastle', module: 'bcutil-jdk18on'
     }
