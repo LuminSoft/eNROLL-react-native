@@ -1,6 +1,6 @@
 {
   "name": "enroll-react-native",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "eNROLL SDK plugin for React Native — eKYC identity verification for Android and iOS",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
