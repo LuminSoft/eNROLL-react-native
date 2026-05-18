@@ -91,7 +91,7 @@ export interface EnrollColors {
 }
 
 // ---------------------------------------------------------------------------
-// Icon types (Android only — icons are not yet supported on iOS)
+// Icon types (supported on Android and iOS)
 // ---------------------------------------------------------------------------
 
 /**
@@ -265,7 +265,7 @@ export interface EnrollForgetIcons {
 
 /**
  * Top-level icon configuration for the eNROLL SDK.
- * **Android only.** Icons are not yet supported on iOS.
+ * Supported on **Android and iOS**. Asset names reference platform-specific resources.
  */
 export interface EnrollIcons {
   logo?: EnrollLogoConfig;

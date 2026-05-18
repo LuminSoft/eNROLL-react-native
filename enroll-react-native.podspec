@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
-  s.dependency 'EnrollFramework', '~> 3.0.7'
+  s.dependency 'EnrollFramework', '~> 3.0.9'
 
   if respond_to?(:install_modules_dependencies, true)
     install_modules_dependencies(s)
