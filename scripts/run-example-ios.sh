@@ -140,7 +140,7 @@ if [ -n "$DEVICE_UDID" ]; then
     -allowProvisioningUpdates
     -allowProvisioningDeviceRegistration
     CODE_SIGN_STYLE=Automatic
-    PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID"
+    APP_BUNDLE_IDENTIFIER="$BUNDLE_ID"
   )
 
   if [ -n "${IOS_DEVELOPMENT_TEAM:-}" ]; then
@@ -202,7 +202,7 @@ xcodebuild \
   -sdk iphonesimulator \
   -destination "id=$SIMULATOR_UDID" \
   -derivedDataPath "$SIMULATOR_DERIVED_DATA_PATH" \
-  PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+  APP_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
   build
 
 SIMULATOR_APP_PATH="$SIMULATOR_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/$SCHEME.app"

@@ -18,6 +18,9 @@ echo "==> Installing example app dependencies..."
 cd "$EXAMPLE_DIR"
 npm install
 
+echo "==> Removing any previously installed example app..."
+adb uninstall "$APP_ID" >/dev/null 2>&1 || true
+
 echo "==> Building & installing Android app..."
 cd "$EXAMPLE_DIR/android"
 ./gradlew :app:installDebug

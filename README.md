@@ -260,7 +260,18 @@ const result = await startEnroll({
 
 ## Theme Customization
 
-The eNROLL SDK supports full theme customization via `enrollTheme`. Both colors and icons work on **Android and iOS**.
+The eNROLL SDK supports UI customization through `enrollTheme`.
+
+Quick summary:
+
+| Feature | Key | Notes |
+|---------|-----|-------|
+| Colors | `enrollTheme.colors` | Preferred color API for Android and iOS |
+| Legacy colors | `appColors` | Deprecated. Used only when `enrollTheme.colors` is not provided |
+| Logo | `enrollTheme.icons.logo` | Choose default, hidden, or custom logo |
+| Step icons | `enrollTheme.icons.<group>.<icon>` | Replace SDK icons with app assets |
+
+If both `enrollTheme.colors` and `appColors` are passed, `enrollTheme.colors` takes priority.
 
 ### Colors
 
@@ -283,16 +294,66 @@ await startEnroll({
 
 ### Icons
 
-Icon `assetName` values reference platform-specific image assets:
-- **Android**: drawable resource names in your app's `res/drawable` folder
-- **iOS**: image asset names in your app's `Assets.xcassets`
+Icon customization is configured under `enrollTheme.icons`. Icon `assetName` values reference assets in the host app:
+
+- **Android**: drawable resource names in `android/app/src/main/res/drawable`, without `R.drawable.` and without a file extension. Example: `my_company_logo`.
+- **iOS**: image set names in `ios/YourApp/Images.xcassets`, without a file extension. Example: `my_company_logo`.
+
+Each step icon uses this shape:
+
+```typescript
+{
+  assetName: 'ic_location_tutorial',
+  renderingMode: 'original', // or 'template'
+}
+```
+
+`renderingMode` controls how the SDK draws the asset:
+
+| Value | Behavior |
+|-------|----------|
+| `original` | Keep the image colors exactly as provided. This is the default. |
+| `template` | Treat the image as a template/tintable icon so the SDK can apply theme color. Best for single-color icons. |
+
+### Logo modes
+
+The logo is configured with `enrollTheme.icons.logo`.
+
+| `mode` | Behavior | Needs `assetName`? |
+|--------|----------|--------------------|
+| `defaultLogo` | Use the built-in eNROLL logo. This is the default. | No |
+| `hidden` | Hide the SDK logo. | No |
+| `custom` | Use your app-provided image asset. | Yes |
+
+Examples:
+
+```typescript
+// Keep the default SDK logo
+logo: { mode: 'defaultLogo' }
+
+// Hide the logo
+logo: { mode: 'hidden' }
+
+// Use your own logo asset
+logo: {
+  mode: 'custom',
+  assetName: 'my_company_logo',
+  renderingMode: 'original',
+}
+```
+
+### Full icon example
 
 ```typescript
 await startEnroll({
   // ...required params...
   enrollTheme: {
     icons: {
-      logo: { mode: 'custom', assetName: 'my_company_logo', renderingMode: 'original' },
+      logo: {
+        mode: 'custom',
+        assetName: 'my_company_logo',
+        renderingMode: 'original',
+      },
       location: {
         tutorial: { assetName: 'ic_location_tutorial' },
         requestAccess: { assetName: 'ic_location_access' },
@@ -305,7 +366,25 @@ await startEnroll({
 });
 ```
 
-Available icon groups: `logo`, `location`, `nationalId`, `passport`, `phone`, `email`, `faceMatching`, `securityQuestions`, `password`, `signature`, `common`, `update`, `forget`.
+Available icon groups:
+
+| Group | Common use |
+|-------|------------|
+| `logo` | Splash/app bar logo configuration |
+| `location` | Location tutorial, permission, error, and grab icons |
+| `nationalId` | National ID tutorial, pre-scan, scan error, and choose icons |
+| `passport` | Passport tutorial, pre-scan, ePassport pre-scan, and choose icons |
+| `phone` | Phone tutorial, selection, and OTP icons |
+| `email` | Email tutorial, selection, and OTP icons |
+| `faceMatching` | Face/liveness tutorial, pre-scan, and error icons |
+| `securityQuestions` | Security question tutorial and auth screen icons |
+| `password` | Password tutorial and auth screen icons |
+| `signature` | Signature tutorial icon |
+| `common` | Backgrounds, popups, field icons, shared UI icons, terms icon |
+| `update` | Update mode icons |
+| `forget` | Forgotten credential/account recovery icons |
+
+For the complete list of icon keys inside each group, see `EnrollIcons` in `src/types.ts` or the API reference.
 
 ## Enrollment Step Types
 

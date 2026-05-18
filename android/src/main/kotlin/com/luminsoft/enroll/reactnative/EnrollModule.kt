@@ -6,7 +6,9 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.luminsoft.enroll_sdk.core.models.EnrollCallback
@@ -42,6 +44,7 @@ import com.luminsoft.enroll_sdk.ui_components.theme.SignatureIcons
 import com.luminsoft.enroll_sdk.ui_components.theme.StepIcon
 import com.luminsoft.enroll_sdk.ui_components.theme.UiIcons
 import com.luminsoft.enroll_sdk.ui_components.theme.UpdateIcons
+import org.json.JSONArray
 import org.json.JSONObject
 import android.graphics.Color as AndroidColor
 
@@ -165,7 +168,7 @@ class EnrollModule internal constructor(context: ReactApplicationContext) :
         }
 
         val appIcons = if (themeMap != null && themeMap.hasKey("icons")) {
-            val iconsJson = JSONObject(themeMap.getMap("icons")!!.toHashMap().toString())
+            val iconsJson = readableMapToJson(themeMap.getMap("icons")!!)
             parseAppIcons(iconsJson)
         } else {
             AppIcons()
@@ -336,6 +339,42 @@ class EnrollModule internal constructor(context: ReactApplicationContext) :
             blue = b / 255f,
             alpha = opacity.toFloat()
         )
+    }
+
+    private fun readableMapToJson(map: ReadableMap): JSONObject {
+        val json = JSONObject()
+        val iterator = map.keySetIterator()
+
+        while (iterator.hasNextKey()) {
+            val key = iterator.nextKey()
+            when (map.getType(key)) {
+                ReadableType.Null -> json.put(key, JSONObject.NULL)
+                ReadableType.Boolean -> json.put(key, map.getBoolean(key))
+                ReadableType.Number -> json.put(key, map.getDouble(key))
+                ReadableType.String -> json.put(key, map.getString(key))
+                ReadableType.Map -> json.put(key, map.getMap(key)?.let { readableMapToJson(it) } ?: JSONObject.NULL)
+                ReadableType.Array -> json.put(key, map.getArray(key)?.let { readableArrayToJson(it) } ?: JSONObject.NULL)
+            }
+        }
+
+        return json
+    }
+
+    private fun readableArrayToJson(array: ReadableArray): JSONArray {
+        val json = JSONArray()
+
+        for (index in 0 until array.size()) {
+            when (array.getType(index)) {
+                ReadableType.Null -> json.put(JSONObject.NULL)
+                ReadableType.Boolean -> json.put(array.getBoolean(index))
+                ReadableType.Number -> json.put(array.getDouble(index))
+                ReadableType.String -> json.put(array.getString(index))
+                ReadableType.Map -> json.put(array.getMap(index)?.let { readableMapToJson(it) } ?: JSONObject.NULL)
+                ReadableType.Array -> json.put(array.getArray(index)?.let { readableArrayToJson(it) } ?: JSONObject.NULL)
+            }
+        }
+
+        return json
     }
 
     // ------------------------------------------------------------------

@@ -37,7 +37,61 @@ const DEFAULTS = {
   templateId: 'templateId',
   contractParameters: 'contractParameters',
   enrollExitStep: 'personalConfirmation',
+  enrollForcedDocumentType: 'nationalIdOrPassport' as const,
   skipTutorial: false,
+  useEnrollTheme: true,
+  useLegacyAppColors: false,
+  themeJson: JSON.stringify(
+    {
+      colors: {
+        primary: {r: 29, g: 86, b: 184},
+        secondary: {r: 87, g: 145, b: 219},
+        appBackgroundColor: {r: 255, g: 255, b: 255},
+        textColor: {r: 0, g: 65, b: 148},
+        errorColor: {r: 219, g: 48, b: 91},
+        successColor: {r: 97, g: 204, b: 61},
+        warningColor: {r: 249, g: 213, b: 72},
+        appWhite: {r: 255, g: 255, b: 255},
+        appBlack: {r: 51, g: 51, b: 51},
+      },
+      icons: {
+        logo: {
+          mode: 'hidden',
+
+        },
+        location: {
+          tutorial: {
+            assetName: 'enroll_example_location',
+            renderingMode: 'template',
+          },
+          requestAccess: {
+            assetName: 'enroll_example_location',
+            renderingMode: 'template',
+          },
+        },
+        nationalId: {
+          tutorial: {
+            assetName: 'enroll_example_id_card',
+            renderingMode: 'original',
+          },
+          preScan: {
+            assetName: 'enroll_example_id_card',
+            renderingMode: 'template',
+          },
+        },
+        common: {
+          popups: {
+            successIcon: {
+              assetName: 'enroll_example_success',
+              renderingMode: 'template',
+            },
+          },
+        },
+      },
+    },
+    null,
+    2,
+  ),
 };
 
 type PickerOption = {label: string; value: string};
@@ -74,6 +128,12 @@ const EXIT_STEP_OPTIONS: PickerOption[] = [
   {label: 'electronicSignature', value: 'electronicSignature'},
   {label: 'ntraCheck', value: 'ntraCheck'},
   {label: 'csoCheck', value: 'csoCheck'},
+];
+
+const FORCED_DOCUMENT_OPTIONS: PickerOption[] = [
+  {label: 'ID or Passport', value: 'nationalIdOrPassport'},
+  {label: 'National ID only', value: 'nationalIdOnly'},
+  {label: 'Passport only', value: 'passportOnly'},
 ];
 
 // ─── Simple inline picker (no 3rd-party deps) ───────────
@@ -133,7 +193,17 @@ function App(): React.JSX.Element {
   const [enrollExitStep, setEnrollExitStep] = useState(
     DEFAULTS.enrollExitStep,
   );
+  const [enrollForcedDocumentType, setEnrollForcedDocumentType] = useState(
+    DEFAULTS.enrollForcedDocumentType as string,
+  );
   const [skipTutorial, setSkipTutorial] = useState(DEFAULTS.skipTutorial);
+  const [useEnrollTheme, setUseEnrollTheme] = useState(
+    DEFAULTS.useEnrollTheme,
+  );
+  const [useLegacyAppColors, setUseLegacyAppColors] = useState(
+    DEFAULTS.useLegacyAppColors,
+  );
+  const [themeJson, setThemeJson] = useState(DEFAULTS.themeJson);
 
   // Result state
   const [status, setStatus] = useState('Ready to launch eNROLL.');
@@ -182,7 +252,11 @@ function App(): React.JSX.Element {
     setTemplateId(DEFAULTS.templateId);
     setContractParameters(DEFAULTS.contractParameters);
     setEnrollExitStep(DEFAULTS.enrollExitStep);
+    setEnrollForcedDocumentType(DEFAULTS.enrollForcedDocumentType);
     setSkipTutorial(DEFAULTS.skipTutorial);
+    setUseEnrollTheme(DEFAULTS.useEnrollTheme);
+    setUseLegacyAppColors(DEFAULTS.useLegacyAppColors);
+    setThemeJson(DEFAULTS.themeJson);
     clearResults();
   }, [clearResults]);
 
@@ -196,6 +270,20 @@ function App(): React.JSX.Element {
     setSuccessResult('Waiting for result...');
     setLoading(true);
 
+    let parsedTheme: any | undefined;
+    if (useEnrollTheme || useLegacyAppColors) {
+      try {
+        parsedTheme = JSON.parse(themeJson);
+      } catch (error: any) {
+        setErrorResult(error?.message ?? 'Theme JSON is invalid.');
+        setStatus('Theme JSON is invalid. Fix it before starting eNROLL.');
+        setStatusKind('error');
+        setSuccessResult('No success result yet.');
+        setLoading(false);
+        return;
+      }
+    }
+
     const options: StartEnrollOptions = {
       tenantId: tenantId.trim(),
       tenantSecret: tenantSecret.trim(),
@@ -203,6 +291,7 @@ function App(): React.JSX.Element {
       enrollEnvironment: enrollEnvironment as any,
       localizationCode: localizationCode as any,
       skipTutorial,
+      enrollForcedDocumentType: enrollForcedDocumentType as any,
     };
 
     const opt = (v: string) => (v.trim() ? v.trim() : undefined);
@@ -229,6 +318,11 @@ function App(): React.JSX.Element {
     }
     if (opt(enrollExitStep)) {
       options.enrollExitStep = opt(enrollExitStep) as any;
+    }
+    if (useEnrollTheme && parsedTheme) {
+      options.enrollTheme = parsedTheme;
+    } else if (useLegacyAppColors && parsedTheme?.colors) {
+      options.appColors = parsedTheme.colors;
     }
 
     try {
@@ -274,6 +368,10 @@ function App(): React.JSX.Element {
     templateId,
     contractParameters,
     enrollExitStep,
+    enrollForcedDocumentType,
+    useEnrollTheme,
+    useLegacyAppColors,
+    themeJson,
   ]);
 
   return (
@@ -354,6 +452,13 @@ function App(): React.JSX.Element {
             onSelect={setEnrollExitStep}
           />
 
+          <Text style={styles.fieldLabel}>Forced Document Type</Text>
+          <InlinePicker
+            options={FORCED_DOCUMENT_OPTIONS}
+            selected={enrollForcedDocumentType}
+            onSelect={setEnrollForcedDocumentType}
+          />
+
           <Field
             label="Contract Parameters"
             value={contractParameters}
@@ -361,19 +466,34 @@ function App(): React.JSX.Element {
             multiline
           />
 
-          {/* Skip Tutorial toggle */}
-          <TouchableOpacity
-            style={styles.checkboxRow}
-            onPress={() => setSkipTutorial(!skipTutorial)}>
-            <View
-              style={[
-                styles.checkbox,
-                skipTutorial && styles.checkboxChecked,
-              ]}>
-              {skipTutorial && <Text style={styles.checkMark}>&#10003;</Text>}
-            </View>
-            <Text style={styles.checkboxLabel}>Skip Tutorial</Text>
-          </TouchableOpacity>
+          <Field
+            label="Theme JSON"
+            value={themeJson}
+            onChange={setThemeJson}
+            multiline
+          />
+
+          <ToggleRow
+            label="Skip Tutorial"
+            selected={skipTutorial}
+            onPress={() => setSkipTutorial(value => !value)}
+          />
+          <ToggleRow
+            label="Send enrollTheme (colors + icons)"
+            selected={useEnrollTheme}
+            onPress={() => {
+              setUseEnrollTheme(value => !value);
+              setUseLegacyAppColors(false);
+            }}
+          />
+          <ToggleRow
+            label="Send legacy appColors only"
+            selected={useLegacyAppColors}
+            onPress={() => {
+              setUseLegacyAppColors(value => !value);
+              setUseEnrollTheme(false);
+            }}
+          />
 
           {/* Action buttons */}
           <View style={styles.actions}>
@@ -458,6 +578,25 @@ function Field({
   );
 }
 
+function ToggleRow({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity style={styles.checkboxRow} onPress={onPress}>
+      <View style={[styles.checkbox, selected && styles.checkboxChecked]}>
+        {selected && <Text style={styles.checkMark}>&#10003;</Text>}
+      </View>
+      <Text style={styles.checkboxLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
 function ResultBox({title, content}: {title: string; content: string}) {
   return (
     <View style={styles.resultBox}>
@@ -525,7 +664,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   fieldMultiline: {
-    minHeight: 80,
+    minHeight: 96,
     textAlignVertical: 'top',
   },
   pickerRow: {

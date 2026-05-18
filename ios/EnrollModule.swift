@@ -461,7 +461,7 @@ class EnrollModule: RCTEventEmitter, EnrollCallBack {
             }
         }
 
-        if let _ = dictionary["assetName"] as? String {
+        if let assetName = dictionary["assetName"] as? String, !assetName.isEmpty {
             icon = parseEnrollIcon(from: dictionary)
         }
 
@@ -492,14 +492,11 @@ class EnrollModule: RCTEventEmitter, EnrollCallBack {
     }
 
     private func parseStepIcon(from dictionary: [String: Any]) -> StepIcon? {
-        guard let _ = dictionary as? [String: Any] else {
+        guard let assetName = dictionary["assetName"] as? String, !assetName.isEmpty else {
             return nil
         }
 
-        guard let enrollIcon = parseEnrollIcon(from: dictionary) as? EnrollIcon else {
-            return nil
-        }
-
+        let enrollIcon = parseEnrollIcon(from: dictionary)
         return StepIcon(icon: enrollIcon)
     }
 

@@ -129,7 +129,7 @@ The underlying event emitter instance. Use `addRequestIdListener()` for convenie
 ```typescript
 interface EnrollTheme {
   colors?: EnrollColors;
-  icons?: EnrollIcons;  // Android only
+  icons?: EnrollIcons;
 }
 ```
 
@@ -160,7 +160,66 @@ interface EnrollColor {
 }
 ```
 
-### `EnrollIcons` (Android Only)
+### `EnrollIcons`
+
+Custom icons are configured through `enrollTheme.icons` and are supported on Android and iOS. `assetName` must match an image asset in the host app:
+
+- Android: drawable resource name in `android/app/src/main/res/drawable`, without extension.
+- iOS: image set name in `ios/YourApp/Images.xcassets`, without extension.
+
+### `EnrollLogoConfig`
+
+```typescript
+interface EnrollLogoConfig {
+  mode?: 'defaultLogo' | 'hidden' | 'custom';
+  assetName?: string;
+  renderingMode?: 'original' | 'template';
+}
+```
+
+| `mode` | Description | `assetName` |
+|--------|-------------|-------------|
+| `'defaultLogo'` | Show the built-in eNROLL logo. Default behavior. | Not required |
+| `'hidden'` | Hide the SDK logo. | Not required |
+| `'custom'` | Show your app-provided logo asset. | Required |
+
+`renderingMode` defaults to `'original'`. Use `'template'` for tintable single-color icons.
+
+### `EnrollStepIcon`
+
+```typescript
+interface EnrollStepIcon {
+  assetName: string;
+  renderingMode?: 'original' | 'template';
+}
+```
+
+Example:
+
+```typescript
+await startEnroll({
+  // required fields...
+  enrollTheme: {
+    icons: {
+      logo: {
+        mode: 'custom',
+        assetName: 'my_company_logo',
+        renderingMode: 'original',
+      },
+      location: {
+        tutorial: { assetName: 'ic_location_tutorial' },
+        requestAccess: { assetName: 'ic_location_access' },
+      },
+      nationalId: {
+        tutorial: {
+          assetName: 'ic_national_id_tutorial',
+          renderingMode: 'template',
+        },
+      },
+    },
+  },
+});
+```
 
 See `src/types.ts` for the full icon configuration interface, including:
 - `logo` — Logo configuration
